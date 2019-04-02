@@ -1,0 +1,70 @@
+body {
+    font-family:  'Squada One', sans-serif;
+    box-sizing: border-box;
+    background-color: #1B2226;
+}
+
+#logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+    margin-top: 5%;
+}
+
+#play {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #00F69F;
+    border-radius: .4vw;
+    border: .15vw solid #0090FF;
+    cursor: pointer;
+    font-size: 1.8vw;
+    padding: .5%;
+    color:  #0090FF;
+    font-family:  'Squada One', sans-serif;
+    width: 7%;
+    margin-top: 4%;
+}
+
+#play:hover {
+    background-color: #0090FF;
+    color: #00F69F;
+}
+
+button:focus {
+    outline: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+#ball {
+    position: absolute;
+    top: 0;
+    margin-left: 67%;
+    width: 2.9%;
+}
+
+#rec {
+    position: absolute;
+    top: 0;
+    margin-left: 30%;
+    width: 2.9%;
+}
+
+#rec2 {
+    position: absolute;
+    top: 0;
+    margin-left: 73%;
+    width: 2.9%;
+}
+
+#tri {
+    position: absolute;
+    top: 0;
+    margin-left: 20%;
+    width: 6%;
+}

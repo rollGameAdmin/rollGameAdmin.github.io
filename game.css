@@ -1,0 +1,230 @@
+body {
+    font-family:  'Squada One', sans-serif;
+    box-sizing: border-box;
+    background-color: #1B2226;
+}
+
+.container {
+    margin-top: -1%;
+    position: relative;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 87%;
+}
+
+
+h1 {
+    display: block;
+    position: absolute;
+    text-align: center;
+    font-family: 'Squada One', sans-serif;
+    font-size: 2vw;
+    color: #00F69F;
+}
+
+#bounce-instruction {
+    top: 0;
+    right: 0;
+    width: 98%;
+}
+
+#score-counter {
+    top: 0;
+    left: 2.5%;
+    margin-top: 1.2%;
+}
+
+audio {
+    display: none;
+}
+
+canvas {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #273336;
+    width: 100%;
+}
+
+
+.screen {
+    padding: 1%;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    left:0;
+    right:0;
+    margin: auto;
+    width: 20%;
+    height: 30%;
+    background-color: #00F69F;
+    border-radius: 1vw;
+    border: .23vw solid #0090FF;
+}
+
+#restart {
+    display: none;
+    width: 28%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: Transparent;
+    border: none;
+    margin-top: -9%;
+    cursor: pointer;
+}
+
+#restartButton{
+    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#start {
+    display: block;
+    width: 45%;
+    height: 30%;
+    margin-top: -6%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #00F69F;
+    border-radius: .4vw;
+    border: .15vw solid #0090FF;
+    cursor: pointer;
+    font-size: 1.8vw;
+    font-family: 'Squada One', sans-serif;
+    text-align: center;
+    color: #0090FF;
+}
+
+#start:hover {
+    background-color: #0090FF;
+    color: #00F69F;
+}
+
+#score {
+    display: none;
+    margin-top: 3%; 
+    color: #0090FF;
+    font-size: 1.9vw;
+    text-align: center;
+}
+
+#instruction {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 76%;
+    margin-top: 4%; 
+    color: #0090FF;
+    font-size: 1.7vw;
+    text-align: center;
+    cursor: default;
+}
+
+#shortcut {
+    display: block;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 3%;
+    color: #0090FF;
+    font-size: 1.2vw;
+    cursor: default;
+    text-align: center;
+}
+
+#sound-controls {
+    padding-top: .7%;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 1%;
+    width: 16%;
+    text-align: center;
+}
+
+
+#music, #sounds {
+    width: 50%;
+    background-color: Transparent;
+    border: none;
+}
+
+#sounds {
+    float: right;
+}
+#music {
+    float: left;
+}
+
+#musicButton, #soundsButton {
+    display: block;
+    width: 47%;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+}
+
+#m, #s {
+    font-family: 'Squada One', sans-serif;
+    margin-top: 3%;
+    color: #00F69F;
+    font-size: 1vw;
+}
+
+button:focus {
+    outline: 0;
+}
+
+#rotate {
+    display: none;
+    margin-top: 10%;
+    font-size: 10vw;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#credits {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: right;
+    color: #00F69F;
+    margin-top: 4%;
+    width: 87%;
+    font-size: 1.3vw;
+}
+
+@media screen and (max-width: 900px) {
+    #screen {
+        height: 11vw;
+    }
+    .container {
+        width: 100%;
+        margin-top: 0;
+    }
+
+    #credits {
+        margin-top: 0;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .container {
+        display: none;
+    }
+    
+    #rotate {
+        display: block;
+    }
+
+    #credits {
+        display: none;
+    }
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Roll To Conquer</title>
+    <link rel="stylesheet" href="game.css">
+    <link href="https://fonts.googleapis.com/css?family=Passion+One|Squada+One" rel="stylesheet">
+    <link rel="icon" href="img/crowned/crown.png">
+    <script>
+        if (window.location.protocol == "http:") {
+          window.location.protocol = "https:"
+        }
+    </script>
+</head>
+<body>
+    <h1 id = 'rotate'> Rotate or Enlarge Screen. </h1> 
+    <p id = 'credits'>
+         Made by: Josi 
+    </p>
+    <div class = "container" id = "container">
+        <canvas id="game"></canvas>
+        <h1 id = "score-counter">0</h1> 
+        <h1 id = "bounce-instruction">Use Space Bar or Touch Screen to Bounce!</h1>
+        <div class = "screen" id = "screen">
+                <p id = "instruction">
+                        Click below or press spacebar to roll!
+                </p>
+                <button id = "start">
+                    START
+                </button>
+                <p id = "score"></p>
+                <div id = "restart">
+                    <img id = "restartButton" src="img/restart/restart_button2.png" alt="restart button">
+                </div>
+                <p id = "shortcut"> Shortcut: Spacebar </p>
+        </div>
+        <div id = "sound-controls">
+            <div id = "music">
+                    <img id = "musicButton" src="img/sounds/music_button1.png" alt="music button">
+                    <p id = "m">Shortcut: M Key</p>
+            </div>
+            <div id = "sounds">
+                    <img id = "soundsButton" src="img/sounds/sounds_button1.png" alt="sounds button">
+                    <p id = "s">Shortcut: S Key</p>
+            </div>
+        </div>
+    </div>
+    <audio src="sounds/background1.mp3" id="background" loop>
+        Your browser doesn't support audio.
+    </audio>  
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="js/classes.js"></script>
+    <script src="js/create.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
