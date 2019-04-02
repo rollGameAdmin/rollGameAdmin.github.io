@@ -1,0 +1,51 @@
+body {
+    font-family:  'Ubuntu', sans-serif;
+    box-sizing: border-box;
+    background-color: #1B2226;
+}
+
+#head {
+    text-align: center;
+    color: #00F69F;
+    font-size: 2vw;
+    margin-top: 5%;
+}
+
+p {
+    color:  #00F69F;
+    text-align: left;
+    font-size: 1vw;
+}
+
+#about {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+    padding: 1%;
+    border-radius: 3%;
+    border: .25vw solid #0090FF;
+}
+
+#home {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10%;
+    margin-top: 10%;
+    cursor: pointer;
+}
+
+#rec2 {
+    position: absolute;
+    top: 0;
+    margin-left: 24%;
+    width: 2.9%;
+}
+
+#ball {
+    position: absolute;
+    top: 0;
+    margin-left: 20%;
+    width: 2.9%;
+}

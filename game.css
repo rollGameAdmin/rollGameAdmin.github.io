@@ -43,7 +43,7 @@ canvas {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    background-color: #273336;
+    background-color: #263238;
     width: 100%;
 }
 
@@ -200,6 +200,15 @@ button:focus {
     font-size: 1.3vw;
 }
 
+#home {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10%;
+    margin-top: .5%;
+    cursor: pointer;
+}
+
 @media screen and (max-width: 900px) {
     #screen {
         height: 11vw;
@@ -225,6 +234,10 @@ button:focus {
     }
 
     #credits {
+        display: none;
+    }
+
+    #home {
         display: none;
     }
 }
