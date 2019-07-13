@@ -84,17 +84,17 @@ function main() {
     let renderReq = 0;
     function renderGraphics() {
         renderReq = window.requestAnimationFrame(renderGraphics);
-        graphics.render();
+        graphicsToRender.render();
     }
 
     
-    renderGraphics(); //renders all graphics it holds
+    renderGraphics(); //renders all graphicsToRender it holds
 
     let rotateReq = 0;
     function rotateBall() {
         rotateReq = window.requestAnimationFrame(rotateBall);
         if (global.rotating) {
-            ball.update();           
+            ball.update();
         } else {
             window.cancelAnimationFrame(rotateReq);
         }
@@ -220,7 +220,7 @@ function main() {
     function moveDownAll() {
         moveDownReq = window.requestAnimationFrame(moveDownAll);
         if (rectangleWall.getTopY() < line.beginY - scale(150)) {
-            graphics.downAll(scale(7));
+            graphicsToRender.downAll(scale(7));
             ball.initialCenterY = ball.centerY;
         } else {
             window.cancelAnimationFrame(moveDownReq);
@@ -316,7 +316,7 @@ function main() {
 
 
     let manageRowsReq = 0;
-    function manageRows() {
+    function manageRows(helloMsg) {
         manageRowsReq = window.requestAnimationFrame(manageRows);
 
         /*-- manage recs and death traps --*/
@@ -391,24 +391,24 @@ function main() {
 
         /* manage cannon and darts */
         if (cannon.getRightX() < scale(-100)) {
-            graphics.remove(cannonRow);
+            graphicsToRender.remove(cannonRow);
         }
     
         if (dartsToShoot.length > 0 &&
             dartsToShoot[dartsToShoot.length - 1].endX < scale(-100)) {
-            graphics.remove(dartsToShoot);
+            graphicsToRender.remove(dartsToShoot);
         }
         /*---*/
 
         /*manage trampo*/
         if (trampo1.getRightX() < scale(-100)) {
-            graphics.remove(trampos);
+            graphicsToRender.remove(trampos);
         }
         /*---*/
 
         /*manage rec walls*/
         if (rectangleWall.getRightX() < scale(-100)) {
-            graphics.remove(rectangleWalls);
+            graphicsToRender.remove(rectangleWalls);
         }
         /*---*/
     }
@@ -444,7 +444,7 @@ function main() {
             global.hitTri = ball.deathTri(triRow);
         }
 
-
+        /*manage cannon shooting*/ 
         if (Math.abs((cannon.getLeftX()) - (ball.getRightX()) <= scale(2800)) &&
             !global.shotDarts) {
             shootFirstDart();
@@ -452,12 +452,13 @@ function main() {
             shotDarts = true;
         }
 
-        /*manage cannon shooting*/ 
+        /*store cannon*/
         if (Math.abs((cannon.getLeftX()) - (ball.getRightX()) <= scale(400)) && !stored) {
             storeCannon();
             stored = true;
         }
 
+        /*Check if ball has hit a dart*/
         if (dartsToShoot.length > 0) {
             let dart = dartsToShoot[global.dartsIndex];
             if (dart.beginX <= ball.getRightX() &&
@@ -467,11 +468,12 @@ function main() {
                 }
             }
 
+        /*Update current dart being checked*/
         if (ball.getLeftX() >= dartsToShoot[global.dartsIndex].endX && global.dartsIndex < dartsToShoot.length - 1) {
             global.dartsIndex++;
         }
 
-        /*manage trampo bounce and wall landing*/
+        /*Manage triangle hit or trampo on ground hit*/
         global.hitTrampoOnGround = ball.hitOnGround(trampo1);
         if (global.hitTrampoOnGround || global.hitTri) {
             let triRow = triangles[0];
@@ -483,7 +485,7 @@ function main() {
             }
         }
 
-    
+        /*manage trampo bounce and wall landing*/
         global.trampoLand = ball.landOnGraphic(trampo1, global.bouncing);
         if (global.trampoLand && !global.tramped) {
             window.cancelAnimationFrame(bounceReq);
@@ -653,7 +655,7 @@ function main() {
                 global.wallLand = false;
                 global.tunnelLand = false;
                 crownedBall.centerY = ball.centerY;
-                graphics.spliceAdd(0, 1, crowned); 
+                graphicsToRender.spliceAdd(0, 1, crowned);
                 ball = crownedBall;
                 crownedBall.initialCenterY = rectangleTrail[rectangleTrail.lastIndex()].getTopY() - crownedBall.height/2;
                 global.playBounceSound = false;
@@ -702,13 +704,13 @@ function main() {
             if (hitUfoAmmo) {
                 explosion1.centerX = deployedAmmo[deployedAmmo.lastIndex()].centerX;
                 explosion1.centerY = lastRec3.getTopY() - explosion1.height/2;
-                graphics.push(explosions);
+                graphicsToRender.push(explosions);
                 deployedAmmo.pop();
                 detonation.play();
                 runExplosion();
                 global.soundsOn = false;
                 endGame(-1,-1);
-                graphics.remove(exploded);
+                graphicsToRender.remove(exploded);
             }
 
             if (deployedAmmo.length > 0) {
@@ -749,7 +751,7 @@ function main() {
         beginReq = window.requestAnimationFrame(begin);
 
         if (global.backAll) {  
-            graphics.backAll(gameSpeed);
+            graphicsToRender.backAll(gameSpeed);
         }
 
         if (global.passed) {
@@ -876,7 +878,7 @@ function main() {
         if (global.soundsOn) {
             explode.play();
         }
-        graphics.spliceAdd(0, 1, exploded);
+        graphicsToRender.spliceAdd(0, 1, exploded);
         document.getElementById('score').innerHTML = 'Ouch! Try Again! <br> Score: ' + global.score;
         document.getElementById('screen').style.display = 'block';
     }

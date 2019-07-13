@@ -1,6 +1,6 @@
 //original canvas width: 1300
 const ballRadius = scale(30); //radius of Circle
-let gameSpeed = canvas.width * 6.7/1305; //number of pixels graphics are displaced per anim frame
+let gameSpeed = canvas.width * 6.7/1305; //number of pixels graphicsToRender are displaced per anim frame
 const initialGameSpeed = gameSpeed;
 let colors = {
     darkGrey: '#273336',
@@ -13,8 +13,9 @@ let colors = {
 }
 
 
-//Create graphics object
-let graphics = new Graphics(canvas.getContext("2d")); //holds all graphics rendered in canvas
+//Create graphicsToRender object
+let graphicsToRender = new Graphics(canvas.getContext("2d")); //holds all graphicsToRender rendered in canvas
+let graphicsToMonitor = new GraphicsToMonitor();
 
 //reference classes.js for the different classes created below
 
@@ -50,7 +51,7 @@ lines.push(line2);
 
 
 //Create new Sprite object for ball
-let ball = new Sprite({
+let ball = new BallSprite({
     c: canvas.getContext("2d"), 
     spriteWidth: 649, 
     spriteHeight: 217, 
@@ -65,7 +66,6 @@ let ball = new Sprite({
     numRows: 2,
     speed: gameSpeed,
     loop: true,
-    reverse: false
 });
 let ball1 = createArray();
 ball1.push(ball);
@@ -646,7 +646,7 @@ let loopSound = new sound("sounds/loop1.mp3");
 let celebration = new sound("sounds/celebrate1.mp3");
 let detonation = new sound("sounds/explosion1.mp3");
 
-graphics.pushMultToBack([
+graphicsToRender.pushMultToBack([
     tunnelRow,
     triangles,
     triangleTrail,
@@ -670,7 +670,7 @@ graphics.pushMultToBack([
     explosions
 ]);
 
-graphics.pushMultToRender([
+graphicsToRender.pushMultToRender([
     ball1,
     line1,
     tunnelRow,
@@ -701,7 +701,7 @@ graphics.pushMultToRender([
     flags
 ]);
 
-graphics.pushMultToDown([
+graphicsToRender.pushMultToDown([
     ball1,
     triangles,
     triangleTraps,

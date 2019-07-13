@@ -25,7 +25,7 @@ function refresh() {
 
 class Graphic {
     constructor(details) {
-        this.c = details.c; //canvas context for cing
+        this.c = details.c; //canvas context
         this.centerX = details.centerX; //x-coordinate of center
         this.centerY = details.centerY; //y-coordinate of center
         this.initialCenterX = this.centerX; //initial x-coordinate of center
@@ -345,7 +345,7 @@ class Pic extends Graphic {
 class Graphics {
     constructor(context) {
         this.c = context;
-        this.toBack = []; //array to contain all of the graphics of type graphic in the canvas
+        this.toBack = []; //array to contain all of the graphicsToRender of type graphic in the canvas
         this.toRender = [];
         this.toDown = [];
     }
@@ -368,7 +368,7 @@ class Graphics {
             }
         }
     }
-    //adds new graphic to the graphics array
+    //adds new graphic to the graphicsToRender array
     pushToBack(rowToAdd) {
         this.toBack.push(rowToAdd);
     }
@@ -404,7 +404,7 @@ class Graphics {
         return this.toBack[i];
     }
 
-    //removes and returns first element in the graphics array
+    //removes and returns first element in the graphicsToRender array
     shift() {
         return this.toRender.shift();
     }
@@ -444,7 +444,7 @@ class Graphics {
         }
     }
 
-    //rollsBack specified graphics according to those found in graphicsToRollBack array
+    //rollsBack specified graphicsToRender according to those found in graphicsToRollBack array
     backGraphics(graphicsToBack) {
         for (let i = 0; i < graphicsToBack.length; i++) {
                 graphicsToBack[i].back(gameSpeed);
@@ -641,20 +641,72 @@ class Sprite extends Graphic {
         return land;
     }
 
-    hitOnGround(graphic) {
-        let graphicLeftX = graphic.getLeftX();
-        let graphicRightX = graphic.getRightX();
-        let hit;
-        hit = this.centerX >= graphicLeftX &&
-                this.centerX <= graphicRightX &&
-                this.centerY >= graphic.getTopY();
-        return hit;
+    passed(graphic) {
+        let passed = this.getLeftX() >= graphic.getRightX();
+        return passed;
+    }
+
+    changeSrc(src) {
+        this.image.src = src;
+    }
+}
+
+class BallSprite extends Sprite {
+    constructor(details) {
+        super(details);
+        this.isMovingForward = false;
+        this.isRotating = false;
+        this.isBouncing = false;
+        this.isReadyToBounce = false;
+    }
+
+    bounce() {
+        super.bounce();
+        this.isBouncing = true;
+    }
+
+    stopBouncing(centerYToStop) {
+        this.isBouncing = false;
+        this.centerY = centerYToStop;
+        this.bounceSpeedY = this.initialBounceSpeedY;
+        this.isReadyToBounce = true;
+    }
+
+    readyToBounce() {
+        this.isReadyToBounce = true;
+    }
+
+    isNotReadyToBounce() {
+        this.isReadyToBounce = false;
+    }
+
+    update() {
+    }
+
+    rotate() {
+        super.update();
+        this.isRotating = true;
+    }
+
+    stopRotating() {
+        this.isRotating = false;
+    }
+
+    moveForward() {
+        this.forward();
+        this.rotate();
+        this.isMovingForward = true;
+        this.isRotating = true;
+    }
+    stopMovingForward() {
+        this.isMovingForward = false;
+        this.isRotating = false;
     }
 
     hitAmmo(ammo) {
         let hit = this.centerX >= ammo.getLeftX() &&
-              this.centerX <= ammo.getRightX() &&
-              this.centerY >= ammo.getTopY();
+            this.centerX <= ammo.getRightX() &&
+            this.centerY >= ammo.getTopY();
         return hit;
     }
 
@@ -665,8 +717,8 @@ class Sprite extends Graphic {
         let thisLeftX = this.getLeftX();
 
         let on = this.centerY >= graphicTopY - this.height/2 &&
-                thisLeftX >= graphicLeftX &&
-                thisLeftX <= graphicRightX + scale(100);
+            thisLeftX >= graphicLeftX &&
+            thisLeftX <= graphicRightX + scale(100);
         return on;
     }
 
@@ -678,14 +730,19 @@ class Sprite extends Graphic {
         let topY = firstTri.getTopY();
 
         let deathLand = this.centerX >= leftX &&
-                        this.getLeftX() <= rightX &&
-                        this.centerY + this.height/8 >= topY;
+            this.getLeftX() <= rightX &&
+            this.centerY + this.height/8 >= topY;
         return deathLand;
     }
 
-    passed(graphic) {
-        let passed = this.getLeftX() >= graphic.getRightX();
-        return passed;
+    hitOnGround(graphic) {
+        let graphicLeftX = graphic.getLeftX();
+        let graphicRightX = graphic.getRightX();
+        let hit;
+        hit = this.centerX >= graphicLeftX &&
+            this.centerX <= graphicRightX &&
+            this.centerY >= graphic.getTopY();
+        return hit;
     }
 
     throughTunnel(tunnel) {
@@ -694,13 +751,23 @@ class Sprite extends Graphic {
         let thisLeftX = this.getLeftX();
         let thisRightX = this.getRightX();
         let through = thisLeftX >= tunnelLeftX - scale(100) &&
-                      thisRightX <= tunnelRightX + scale(75) &&
-                      this.centerY == this.initialCenterY;
+            thisRightX <= tunnelRightX + scale(75) &&
+            this.centerY == this.initialCenterY;
         return through;
     }
+}
 
-    changeSrc(src) {
-        this.image.src = src;
+class AnimationRequest {
+    constructor() {
+        this.request = null;
+    }
+
+    setRequest(request) {
+        this.request = request;
+    }
+
+    getRequest() {
+        return this.request;
     }
 }
 
@@ -730,10 +797,10 @@ function sound(src) {
     document.body.appendChild(this.sound);
     this.play = function(){
         this.sound.play();
-    }
+    };
     this.pause = function(){
         this.sound.pause();
-    }
+    };
     this.sound.volume = .05;
 }
 
@@ -741,16 +808,53 @@ function createArray() {
     let array = [];
     array.lastIndex = function () {
         return array.length - 1;
-    }
+    };
     array.changeColor = function(color) {
         for (let i = 0; i < array.length; i++) {
             array[i].color = color;
         }
-    }
+    };
     array.reveal = function(rate) {
         for (let i = 0; i < array.length; i++) {
             array[i].reveal(rate);
         }
-    }
+    };
     return array;
+}
+
+class Node {
+    constructor(graphic) {
+        this.graphic = graphic;
+        this.next = null;
+    }
+}
+
+class GraphicsToMonitor {
+    constructor() {
+        this.head = null;
+        this.tail = this.head;
+    }
+
+    add(graphic) {
+        let newGraphic = new Node(graphic);
+        if (this.head === null) {
+            this.head = newGraphic;
+        } else {
+            this.tail.next = newGraphic;
+            this.tail = newGraphic;
+        }
+    }
+
+    getFront() {
+        return this.head;
+    }
+    remove() {
+        let graphicToRemove = this.head;
+        this.head = this.head.next;
+        return graphicToRemove;
+    }
+
+    isEmpty() {
+        return this.head = null;
+    }
 }
