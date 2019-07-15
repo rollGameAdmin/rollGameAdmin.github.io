@@ -1,5 +1,5 @@
 //original width was 1300px
-var canvas = document.getElementById("game");
+let canvas = document.getElementById("game");
 canvas.width = canvas.offsetWidth;
 canvas.height =  canvas.width/2.3;
 let changed = false;
@@ -14,7 +14,7 @@ function scale(px) {
 }
 function refresh() {
     let refreshReq = window.requestAnimationFrame(refresh);
-    if (window.innerWidth > 500 && !changed) {;
+    if (window.innerWidth > 500 && !changed) {
         location.reload();
         changed = true;
     } else if (changed) {
@@ -22,6 +22,15 @@ function refresh() {
     }
 }
 
+let graphicTypes = {
+    rectangle: 1,
+    deathTriangle: 2,
+    deathTrap: 3,
+    trampo: 4,
+    wall: 5,
+    dart: 6,
+    cannon: 7
+};
 
 class Graphic {
     constructor(details) {
@@ -50,6 +59,8 @@ class Graphic {
         this.loopRadius = scale(100); //original 100
         this.axisX =  this.centerX - (Math.cos(-Math.PI/2) * this.loopRadius);
         this.axisY =  this.centerY + (Math.sin(-Math.PI/2) * this.loopRadius);
+        this.graphicType = details.graphicType;
+        this.isStored = false;
     }
 
     //Add render method when you create class for a new shape :)
@@ -106,6 +117,7 @@ class Graphic {
 
     store() {
         this.centerY += this.storeSpeed;
+        this.isStored = true;
     }
 
     changeColor(color) {
@@ -128,6 +140,9 @@ class Graphic {
         return (this.centerY + this.height/2);
     }
 
+    isAbove(graphic) {
+        return this.getTopY() < graphic.getTopY();
+    }
 }
 
 class Circle extends Graphic {
@@ -184,8 +199,6 @@ class Rectangle extends Graphic {
     changeColor(color) {
         this.color = color;
     }
-
-
 }
 
 class Triangle extends Graphic {
@@ -198,6 +211,7 @@ class Triangle extends Graphic {
         this.endX = details.endX; //x-coordinate for right-bottom corner
         this.endY = details.endY; //y-coordinate for right-bottom corner
         this.width = details.width; //triangle width
+        this.centerX = this.beginX + this.width/2;
         this.height = details.height; //triangle height
         this.color = details.color; //color of triangle
         this.strokeColor = details.strokeColor;
@@ -224,6 +238,7 @@ class Triangle extends Graphic {
         this.beginX -= this.speed;
         this.topX -= this.speed;
         this.endX -= this.speed;
+        this.centerX = this.beginX - this.width/2;
     }
 
     //moves triangle forwards
@@ -231,6 +246,7 @@ class Triangle extends Graphic {
         this.beginX += this.speed;
         this.topX += this.speed;
         this.endX += this.speed;
+        this.centerX = this.beginX - this.width/2;
     }
 
     getLeftX() {
@@ -266,13 +282,17 @@ class Triangle extends Graphic {
 class Line {
     constructor(details) {
         this.c = details.c;
-        this.beginX = details.beginX; //x-coordinate to begin cing line
-        this.beginY = details.beginY; //y-coordinate to end cing line
-        this.endX = details.endX; //x-coordinate to end cing line
-        this.endY = details.endY; //y-coordinate to end cing line
+        this.beginX = details.beginX; //x-coordinate to begin drawing line
+        this.beginY = details.beginY; //y-coordinate to end drawing line
+        this.endX = details.endX; //x-coordinate to end drawing line
+        this.endY = details.endY; //y-coordinate to end drawing line
         this.color = details.color; //color of line
-        this.width = details.width; //width of line
+        this.width = details.thickness; //thickness of line
+        this.length = this.beginX - this.endX;
+        this.centerX = this.beginX - this.length/2;
         this.speed = details.speed;
+        this.graphicType = details.graphicType;
+        this.spacing = details.spacing
     }
 
     //cs line on Canvas
@@ -290,6 +310,7 @@ class Line {
     back(gameSpeed) {
         this.beginX -= gameSpeed;
         this.endX -= gameSpeed;
+        this.centerX = this.beginX - this.length/2;
     }
 
     moveDown(amount) {
@@ -342,166 +363,6 @@ class Pic extends Graphic {
     }
 }
 
-class Graphics {
-    constructor(context) {
-        this.c = context;
-        this.toBack = []; //array to contain all of the graphicsToRender of type graphic in the canvas
-        this.toRender = [];
-        this.toDown = [];
-    }
-    //cs each graphic in the array according to their ordering
-    render() {
-        this.c.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < this.toRender.length; i++) {
-            let row = this.toRender[i];
-            if (!(row[0] instanceof Array)) {
-                for (let j = 0; j < row.length; j++) {
-                    row[j].render();
-                }
-            } else {
-                for (let j = 0; j < row.length; j++) {
-                    let subRow = row[j];
-                    for (let k = 0; k < subRow.length; k++) {
-                        subRow[k].render();
-                    }
-                }
-            }
-        }
-    }
-    //adds new graphic to the graphicsToRender array
-    pushToBack(rowToAdd) {
-        this.toBack.push(rowToAdd);
-    }
-
-    pushMultToBack(rowsToAdd) {
-        for (let i = 0; i < rowsToAdd.length; i++) {
-            this.toBack.push(rowsToAdd[i]);
-        }
-    }
-
-    pushMultToRender(rowsToAdd) {
-        for (let i = 0; i < rowsToAdd.length; i++) {
-            this.toRender.push(rowsToAdd[i]);
-        }
-    }
-
-    pushMultToDown(rowsToAdd) {
-        for (let i = 0; i < rowsToAdd.length; i++) {
-            this.toDown.push(rowsToAdd[i]);
-        }
-    }
-
-    unshift(row) {
-        this.toRender.unshift(row);
-    }
-
-    push(rowToAdd) {
-        this.toRender.push(rowToAdd);
-    }
-
-    getLastObject() {
-        let i = this.toBack.length - 1;
-        return this.toBack[i];
-    }
-
-    //removes and returns first element in the graphicsToRender array
-    shift() {
-        return this.toRender.shift();
-    }
-
-    splice(index, deleteCount) {
-        return this.toRender.splice(index, deleteCount);
-    }
-
-    spliceAdd(index, deleteCount, toAdd) {
-        return this.toRender.splice(index, deleteCount, toAdd);
-    }
-
-    moveDown() {
-        for (let i = 0; i < this.toBack.length; i++) {
-            let row = this.toBack[i];
-            if (row[0] instanceof Rectangle || row[0] instanceof Line) {
-                for (let j = 0; j < row.length; j++) {
-                    row[j].moveDown(120);
-                }
-            }
-        }
-    }
-
-    remove(row) {
-        for (let i = 0; i < this.toRender.length; i++) {
-            if (this.toRender[i] == row) {
-                this.toRender.splice(i, 1);
-            }
-        }
-    }
-
-    removeRow(row) {
-        for (let i = 0; i < this.toRender.length; i++) {
-            if (row == this.toRender[i]) {
-                this.toRender.splice(i, 1);
-            }
-        }
-    }
-
-    //rollsBack specified graphicsToRender according to those found in graphicsToRollBack array
-    backGraphics(graphicsToBack) {
-        for (let i = 0; i < graphicsToBack.length; i++) {
-                graphicsToBack[i].back(gameSpeed);
-        }
-    }
-
-    backAll(gameSpeed) {
-        let i = 0;
-        while (i < this.toBack.length) {
-            let row = this.toBack[i];
-            if (!(row[0] instanceof Array)) {
-                for (let j = 0; j < row.length; j++) {
-                    row[j].back(gameSpeed);
-                }
-            } else {
-                for (let j = 0; j < row.length; j++) {
-                    let subRow = row[j];
-                    for (let k = 0; k < subRow.length; k++) {
-                        subRow[k].back(gameSpeed);
-                    }
-                }
-            }
-            i++;
-        }
-    }
-
-    downAll(rate) {
-        let i = 0;
-        while (i < this.toDown.length) {
-            let row = this.toDown[i];
-            if (!(row[0] instanceof Array)) {
-                for (let j = 0; j < row.length; j++) {
-                    row[j].moveDown(rate);
-                }
-            } else {
-                for (let j = 0; j < row.length; j++) {
-                    let subRow = row[j];
-                    for (let k = 0; k < subRow.length; k++) {
-                        subRow[k].moveDown(rate);
-                    }
-                }
-            }
-            i++;
-        }
-    }
- 
-
-    forward_graphics(graphicsToForward) {
-        for (let i = 2; i <= graphicsToForward.length + 1; i++) {
-            this.toBack[i].forward();
-        }
-    }
-
-    
-
-}
-
 class Sprite extends Graphic {
     constructor(details) {
         super(details);
@@ -525,6 +386,7 @@ class Sprite extends Graphic {
         this.loop = details.loop;
         this.reverse = details.reverse;
         this.renderForwards = true;
+        this.finished = false;
     }
 
     render() {
@@ -562,9 +424,12 @@ class Sprite extends Graphic {
                         this.columnIndex++;
                         this.frameIndex++;
                     }  else if (this.loop) {
+                        this.finished = true;
                         this.columnIndex = 0;
                         this.rowIndex = 0;
                         this.frameIndex = 0;
+                    } else {
+                        this.finished = true;
                     }
                 }
             } else {
@@ -605,48 +470,43 @@ class Sprite extends Graphic {
                         this.rowIndex = 0;
                         this.columnIndex = 0;
                         this.renderForwards = true;
+                    } else {
+                        this.finished = true;
                     }
                 }
             }
         }
     }
 
-    landOnGraphic(graphic, bouncing) {
+    landedOnGraphic(graphic) {
         let graphicLeftX = graphic.getLeftX();
         let graphicRightX = graphic.getRightX();
         let graphicTopY = graphic.getTopY();
 
         let thisLeftX = this.getLeftX();
-        let thisRightX = this.getRightX();
 
-        let land = this.centerY >= graphicTopY - this.height/2 &&
+        return this.centerY >= graphicTopY - this.height/2 &&
                    this.centerX + this.width/4 >= graphicLeftX &&
-                   thisLeftX <= graphicRightX && bouncing;
-
-        return land;
+                   thisLeftX <= graphicRightX;
     }
 
-    landOnTunnel(graphic, bouncing) {
+    landedOnTunnel(graphic, bouncing) {
         let graphicLeftX = graphic.getLeftX();
         let graphicRightX = graphic.getRightX();
         let graphicTopY = graphic.getTopY();
 
         let thisLeftX = this.getLeftX();
-        let thisRightX = this.getRightX();
 
-        let land = this.centerY >= graphicTopY - this.height/2 &&
+        return this.centerY >= graphicTopY - this.height/2 &&
                    this.centerX >= graphicLeftX &&
                    thisLeftX <= graphicRightX && bouncing;
-
-        return land;
     }
 
     passed(graphic) {
-        let passed = this.getLeftX() >= graphic.getRightX();
-        return passed;
+        return this.getLeftX() >= graphic.getRightX();
     }
 
-    changeSrc(src) {
+    changeImg(src) {
         this.image.src = src;
     }
 }
@@ -658,6 +518,7 @@ class BallSprite extends Sprite {
         this.isRotating = false;
         this.isBouncing = false;
         this.isReadyToBounce = false;
+        this.isFalling = false;
     }
 
     bounce() {
@@ -674,6 +535,20 @@ class BallSprite extends Sprite {
 
     readyToBounce() {
         this.isReadyToBounce = true;
+    }
+
+    fall() {
+        super.fall();
+        this.isFalling = true;
+        this.isReadyToBounce = false;
+    }
+
+    stopFalling(centerYToStop) {
+        this.isFalling = false;
+        this.centerY = centerYToStop;
+        this.bounceSpeedY = this.initialBounceSpeedY;
+        this.isReadyToBounce = true;
+        ball.fallSpeedY = 0;
     }
 
     isNotReadyToBounce() {
@@ -703,11 +578,18 @@ class BallSprite extends Sprite {
         this.isRotating = false;
     }
 
-    hitAmmo(ammo) {
-        let hit = this.centerX >= ammo.getLeftX() &&
-            this.centerX <= ammo.getRightX() &&
-            this.centerY >= ammo.getTopY();
-        return hit;
+    isBehindGraphicPlusDisplacement(graphic, distance) {
+        return this.getLeftX() < graphic.getRightX() + distance;
+    }
+
+    isWithinDistanceFromGraphic(graphic, distance) {
+        return this.getRightX() > graphic.getLeftX() - distance;
+    }
+
+    hitAmmo(dart) {
+        return this.centerX >= dart.getLeftX() &&
+            this.centerX <= dart.getRightX() &&
+            this.centerY >= dart.getTopY();
     }
 
     stillOnGraphic(graphic) {
@@ -735,6 +617,16 @@ class BallSprite extends Sprite {
         return deathLand;
     }
 
+    killedByTri(triangle) {
+        let leftX = triangle.getLeftX();
+        let rightX = triangle.getRightX();
+        let topY = triangle.getTopY();
+
+        return this.centerX >= leftX &&
+            this.getLeftX() <= rightX &&
+            this.centerY + this.height/8 >= topY;
+    }
+
     hitOnGround(graphic) {
         let graphicLeftX = graphic.getLeftX();
         let graphicRightX = graphic.getRightX();
@@ -745,6 +637,16 @@ class BallSprite extends Sprite {
         return hit;
     }
 
+    deathByDeathTrap(deathTrap) {
+        let dead = this.centerX >= deathTrap.getLeftX() &&
+            this.centerX <= deathTrap.getRightX() &&
+            (deathTrap.getTopY() - this.getBottomY()) <= 1;
+        if (dead) {
+            this.centerY = deathTrap.getBottomY();
+        }
+        return dead;
+    }
+
     throughTunnel(tunnel) {
         let tunnelLeftX = tunnel.getLeftX();
         let tunnelRightX = tunnel.getRightX();
@@ -752,8 +654,50 @@ class BallSprite extends Sprite {
         let thisRightX = this.getRightX();
         let through = thisLeftX >= tunnelLeftX - scale(100) &&
             thisRightX <= tunnelRightX + scale(75) &&
-            this.centerY == this.initialCenterY;
+            this.centerY === this.initialCenterY;
         return through;
+    }
+}
+
+class CannonSprite extends Sprite {
+    constructor(details) {
+        super(details);
+        this.darts = new GraphicsList();
+        this.isFiring = false;
+        this.justFired = null;
+        this.nextRound = null;
+    }
+
+    load(dart) {
+        this.darts.addToBack(dart);
+    }
+
+    fire(fireSpeed) {
+        if (!this.darts.isEmpty()) {
+            this.justFired = this.darts.removeFront();
+            this.nextRound = this.darts.getFirstGraphic();
+            this.justFired.speed = fireSpeed;
+        }
+        this.isFiring = true;
+    }
+
+    stopFiring() {
+        this.isFiring = false;
+    }
+
+    hasAmmo() {
+        return !this.darts.isEmpty()
+    }
+}
+
+class Dart extends Triangle {
+    constructor(details) {
+        super(details);
+        this.cannon = details.cannon;
+    }
+
+    loadToCannon() {
+        this.cannon.load(this);
     }
 }
 
@@ -822,39 +766,248 @@ function createArray() {
     return array;
 }
 
-class Node {
+class GraphicNode {
     constructor(graphic) {
         this.graphic = graphic;
         this.next = null;
+        this.prev = null;
+    }
+
+    render() {
+        this.graphic.render();
+    }
+
+    forward() {
+        this.graphic.forward();
+    }
+
+    back(gameSpeed) {
+        this.graphic.back(gameSpeed);
+    }
+
+    moveDown(gameSpeed) {
+        this.graphic.moveDown(gameSpeed);
     }
 }
 
-class GraphicsToMonitor {
+class GraphicsList {
     constructor() {
         this.head = null;
         this.tail = this.head;
+        this.length = 0;
+        this.iterator = {
+            *[Symbol.iterator]() {
+                let current = this.head;
+                while (current != null) {
+                    yield current;
+                    current = current.next;
+                }
+            }
+        }
     }
 
-    add(graphic) {
-        let newGraphic = new Node(graphic);
+    addToBack(graphic) {
+        this.length++;
+        let newGraphic = new GraphicNode(graphic);
         if (this.head === null) {
             this.head = newGraphic;
+            this.tail = newGraphic;
         } else {
             this.tail.next = newGraphic;
+            newGraphic.prev = this.tail;
             this.tail = newGraphic;
         }
     }
 
-    getFront() {
+    addToFront(graphic) {
+        this.length++;
+        let newGraphic = new GraphicNode(graphic);
+        if (this.head == null) {
+            this.head = newGraphic;
+            this.tail = newGraphic;
+        } else {
+            newGraphic.next = this.head;
+            this.head.prev = newGraphic;
+            this.head = newGraphic;
+        }
+    }
+
+    getFirst() {
         return this.head;
     }
-    remove() {
+
+    getLast() {
+        return this.tail;
+    }
+
+    getFirstGraphic() {
+        if (this.head !== null) {
+            return this.head.graphic;
+        } else {
+            return null;
+        }
+    }
+
+    getLastGraphic() {
+        if (this.tail != null) {
+            return this.tail.graphic;
+        } else {
+            return null;
+        }
+    }
+    removeFront() {
+        this.length--;
         let graphicToRemove = this.head;
         this.head = this.head.next;
-        return graphicToRemove;
+        if (this.head == null) {
+            this.tail = null;
+        }
+        return graphicToRemove.graphic;
     }
 
     isEmpty() {
-        return this.head = null;
+        return this.length === 0;
+    }
+
+    size() {
+        return this.length;
+    }
+
+    remove(graphic) {
+        this.length--;
+        let current = this.head;
+        while (current != null && current.graphic !== graphic) {
+            current = current.next;
+        }
+        if (current != null) {
+            if (current.prev != null) {
+                current.prev.next = current.next;
+            } else {
+                this.head = current.next;
+            }
+        }
+        return current;
+    }
+
+    colorGraphics() {
+        let current = this.darts.head;
+        while (current != null) {
+            current.graphic.changeColor('#0090FF');
+            current = current.next;
+        }
+    }
+}
+
+class GraphicsToRender {
+    constructor(context) {
+        this.c = context;
+        this.toMoveBack = new GraphicsList(); //array to contain all of the graphicsToRender of graphicTypes graphic in the canvas
+        this.toRender = new GraphicsList();
+        this.toMoveDown = new GraphicsList();
+    }
+
+    render() {
+        this.c.clearRect(0, 0, canvas.width, canvas.height);
+        let current = this.toRender.getFirst();
+        while (current !== null) {
+            current.render();
+            current = current.next;
+        }
+    }
+
+    size() {
+        return this.toRender.size();
+    }
+    //adds new graphic to the graphicsToRender array
+    addGraphicToMoveBack(graphic) {
+        this.toMoveBack.addToBack(graphic);
+    }
+
+    addMultToMoveBack(graphicsToAdd) {
+        for (let i = 0; i < graphicsToAdd.length; i++) {
+            this.toMoveBack.addToBack(graphicsToAdd[i]);
+        }
+    }
+
+    addMultToRender(graphicsToAdd) {
+        for (let i = 0; i < graphicsToAdd.length; i++) {
+            this.toRender.addToBack(graphicsToAdd[i]);
+        }
+    }
+
+    addMultToMoveDown(graphicsToAdd) {
+        for (let i = 0; i < graphicsToAdd.length; i++) {
+            this.toMoveDown.addToBack(graphicsToAdd[i]);
+        }
+    }
+
+    addToFront(graphic) {
+        this.toRender.addToFront(graphic);
+    }
+
+    addToBack(graphic) {
+        this.toRender.addToBack(graphic);
+    }
+
+    getLastGraphic() {
+        return this.toRender.getLastGraphic();
+    }
+
+    getFirstGraphic() {
+        return this.toRender.getFirstGraphic();
+    }
+
+    //removes and returns first element in the graphicsToRender array
+    removeFront() {
+        return this.toRender.removeFront();
+    }
+
+    moveDown() {
+        let current = this.toMoveBack.getFirst();
+        while (current != null) {
+            if (current.graphic instanceof Rectangle || current.graphic instanceof Line) {
+                    current.moveDown(120);
+            }
+            current = current.next
+        }
+    }
+
+    moveBack(gameSpeed) {
+        let current = this.toMoveBack.getFirst();
+        while(current != null) {
+            current.back(gameSpeed);
+            current = current.next;
+        }
+    }
+
+    remove(graphic) {
+        return this.toRender.remove(graphic);
+    }
+
+    moveGraphicsDown(rate) {
+        let i = 0;
+        while (i < this.toMoveDown.length) {
+            let row = this.toMoveDown[i];
+            if (!(row[0] instanceof Array)) {
+                for (let j = 0; j < row.length; j++) {
+                    row[j].moveDown(rate);
+                }
+            } else {
+                for (let j = 0; j < row.length; j++) {
+                    let subRow = row[j];
+                    for (let k = 0; k < subRow.length; k++) {
+                        subRow[k].moveDown(rate);
+                    }
+                }
+            }
+            i++;
+        }
+    }
+
+
+    moveGraphicsForward(graphicsToForward) {
+        for (let i = 2; i <= graphicsToForward.length + 1; i++) {
+            this.toMoveBack[i].forward();
+        }
     }
 }

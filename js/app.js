@@ -11,7 +11,7 @@ function main() {
         deathLand: false,
         dartNum: 1,
         dartsIndex: 0,
-        rectangleTopY: rectangle1.centerY - rectangle1.height/2,
+        rectangleTopY: firstRectangle.centerY - firstRectangle.height/2,
         tunnelTopY: tunnel.centerY - tunnel.height/2,
         wallTopY: rectangleWall.centerY - rectangleWall.height/2,
         rectangleLand: false,
@@ -220,7 +220,7 @@ function main() {
     function moveDownAll() {
         moveDownReq = window.requestAnimationFrame(moveDownAll);
         if (rectangleWall.getTopY() < line.beginY - scale(150)) {
-            graphicsToRender.downAll(scale(7));
+            graphicsToRender.moveGraphicsDown(scale(7));
             ball.initialCenterY = ball.centerY;
         } else {
             window.cancelAnimationFrame(moveDownReq);
@@ -421,7 +421,7 @@ function main() {
         if (rectangleRow.length > 0) {
             let rectangle = rectangleRow[0];
 
-            global.rectangleLand = ball.landOnGraphic(rectangle, global.bouncing);
+            global.rectangleLand = ball.landedOnGraphic(rectangle, global.bouncing);
 
             global.hitRecOnGround = ball.hitOnGround(rectangle);
 
@@ -430,12 +430,12 @@ function main() {
             }          
         } else if (rectangleTrail.length > 0) {
             let rectangle = rectangleTrail[0];
-            global.rectangleLand = ball.landOnGraphic(rectangle, global.bouncing);
+            global.rectangleLand = ball.landedOnGraphic(rectangle, global.bouncing);
         }
 
         /*track tunnel*/
         if (tunnelRow.length > 0) {
-            global.tunnelLand = ball.landOnTunnel(tunnelRow[0], global.bouncing);
+            global.tunnelLand = ball.landedOnTunnel(tunnelRow[0], global.bouncing);
         }
 
         /*track triangles*/
@@ -486,7 +486,7 @@ function main() {
         }
 
         /*manage trampo bounce and wall landing*/
-        global.trampoLand = ball.landOnGraphic(trampo1, global.bouncing);
+        global.trampoLand = ball.landedOnGraphic(trampo1, global.bouncing);
         if (global.trampoLand && !global.tramped) {
             window.cancelAnimationFrame(bounceReq);
             trampo1.update();
@@ -494,7 +494,7 @@ function main() {
             global.tramped = true;
         }
         if (!global.onWall) {
-            global.wallLand = ball.landOnGraphic(rectangleWall, global.bouncing);
+            global.wallLand = ball.landedOnGraphic(rectangleWall, global.bouncing);
             if (global.wallLand) {
                 if (global.soundsOn) {
                     wallLand.play();
@@ -704,7 +704,7 @@ function main() {
             if (hitUfoAmmo) {
                 explosion1.centerX = deployedAmmo[deployedAmmo.lastIndex()].centerX;
                 explosion1.centerY = lastRec3.getTopY() - explosion1.height/2;
-                graphicsToRender.push(explosions);
+                graphicsToRender.addToBack(explosions);
                 deployedAmmo.pop();
                 detonation.play();
                 runExplosion();

@@ -1,3 +1,4 @@
+
 //original canvas width: 1300
 const ballRadius = scale(30); //radius of Circle
 let gameSpeed = canvas.width * 6.7/1305; //number of pixels graphicsToRender are displaced per anim frame
@@ -10,17 +11,13 @@ let colors = {
     purple: '#CD30E8',
     lightOrange: '#FF9933',
     oceanBlue: '#0090FF'
-}
+};
 
 
 //Create graphicsToRender object
-let graphicsToRender = new Graphics(canvas.getContext("2d")); //holds all graphicsToRender rendered in canvas
-let graphicsToMonitor = new GraphicsToMonitor();
+let graphicsToRender = new GraphicsToRender(canvas.getContext("2d")); //holds all graphicsToRender rendered in canvas
 
 //reference classes.js for the different classes created below
-
-let lineLength = canvas.width;
-let beginLineX = 0; 
 let width = scale(5);
 let height;
 //Create new Line object
@@ -46,9 +43,6 @@ let line1 = createArray();
 line1.push(line);
 let lines = createArray();
 lines.push(line2);
-
-
-
 
 //Create new Sprite object for ball
 let ball = new BallSprite({
@@ -116,7 +110,6 @@ let shotShip = new Pic({
     speed: spaceship1.speed
 });
 
-
 //Triangle Details to be passed into Triangle object constructor (refer to classes.js)
 let beginX = tunnel.getRightX() + scale(400);  //original: + 400
 let beginY = line.beginY - line.width/2;
@@ -143,7 +136,6 @@ let triangle1 = new Triangle({
 });
 let triangles1 = createArray();
 triangles1.push(triangle1);
-
 
 height = scale(40)
 //Create new Rectangle object according to rectangleDetails1
@@ -420,7 +412,7 @@ function duplicateForTower(shape, inverted) {
     if (!inverted) {
         let duplicate;
         if (shape instanceof Rectangle) {
-            // duplicate = new Rectangle(rectangleDetails1);
+            // duplicateForRow = new Rectangle(rectangleDetails1);
             duplicate = Object.assign(Object.create(Object.getPrototypeOf(shape)),shape);
             duplicate.centerX = shape.centerX + shape.width + shape.towerSpacing;
             duplicate.centerY = shape.centerY - shape.height - shape.towerHeightDiff;
@@ -441,8 +433,8 @@ function extendDeathTraps(recs, traps, amount) {
     let lastRec = recs[recs.lastIndex()];
     let lastTrap = traps[traps.lastIndex()];
     for (let i = 0; i < amount; i++) {
-        recs.push(duplicateForRow(lastRec));
-        traps.push(duplicateForRow(lastTrap));
+        recs.addToBack(duplicateForRow(lastRec));
+        traps.addToBack(duplicateForRow(lastTrap));
     }
 }
 
@@ -453,7 +445,7 @@ function addToRow(row, amount) {
     let lastIndex = row.lastIndex();
     for (let i = lastIndex; i < amount; i++) {
         let copy = duplicateForRow(row[i]);
-        row.push(copy); 
+        row.addToBack(copy);
     }  
 }
 
@@ -461,12 +453,12 @@ function addToTower(row, amount, inverted) {
     if (!inverted) {
         for (let i = 0; i < amount; i++) {
             let copy = duplicateForTower(row[i], inverted);
-            row.push(copy);
+            row.addToBack(copy);
         }
     } else {
         for (let i = 2; i < amount - 1; i++) {
             let copy = duplicateForTower(row[i], inverted);
-            row.push(copy);
+            row.addToBack(copy);
         }
     }
 }
@@ -484,12 +476,12 @@ function repositionDarts(darts) {
 }
 
 function repositionTriangle(triangle, beginX, beginY) {
-    if (beginX != -1) {
+    if (beginX !== -1) {
         triangle.beginX = beginX;
         triangle.topX = triangle.beginX + triangle.width/2;
         triangle.endX = triangle.beginX + triangle.width;
     }
-    if (beginY != -1) {
+    if (beginY !== -1) {
         triangle.beginY = beginY;
         triangle.topY = triangle.beginY - triangle.height;
         triangle.endY = triangle.beginY;
@@ -507,7 +499,7 @@ triangles2.push(triangle2);
 addToRow(triangles2, 1);
 //---//
 
-//rectangle1 reposition
+//firstRectangle reposition
 rectangle1.centerX = triangles2[triangles2.length-1].getRightX() + scale(400);
 //--//
 
@@ -518,13 +510,13 @@ triangles.push(triangles2);
 let triangleTrail = [];
 //--//
 
-//add 3 more darts to dartsToShoot
+//addToBack 3 more darts to dartsToShoot
 addToRow(dartsToShoot, 3);
 //---//
 
 /*--Create recs/deathtrap 1 */
 
-    // add to rectangleRow
+    // addToBack to rectangleRow
     addToRow(rectangleRow, 1);
     //Reposition deathtrap
     deathTrap1.beginX = rectangleRow[0].getRightX();
@@ -646,7 +638,7 @@ let loopSound = new sound("sounds/loop1.mp3");
 let celebration = new sound("sounds/celebrate1.mp3");
 let detonation = new sound("sounds/explosion1.mp3");
 
-graphicsToRender.pushMultToBack([
+graphicsToRender.addMultToMoveBack([
     tunnelRow,
     triangles,
     triangleTrail,
@@ -670,7 +662,7 @@ graphicsToRender.pushMultToBack([
     explosions
 ]);
 
-graphicsToRender.pushMultToRender([
+graphicsToRender.addMultToRender([
     ball1,
     line1,
     tunnelRow,
@@ -701,7 +693,7 @@ graphicsToRender.pushMultToRender([
     flags
 ]);
 
-graphicsToRender.pushMultToDown([
+graphicsToRender.addMulttoMoveDown([
     ball1,
     triangles,
     triangleTraps,
