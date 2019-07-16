@@ -2,13 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a8429d3e-fa2a-4b22-88f1-ef11a297171c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/User.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game.html" beforeDir="false" afterPath="$PROJECT_DIR$/game.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/app2.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/app2.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/classes.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/classes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/create.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/create.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/create2.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/create2.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -24,10 +22,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app2.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="417">
-              <caret line="442" column="27" selection-start-line="442" selection-start-column="27" selection-end-line="442" selection-end-column="27" />
+            <state relative-caret-position="364">
+              <caret line="22" column="29" selection-start-line="22" selection-start-column="29" selection-end-line="22" selection-end-column="29" />
               <folding>
                 <element signature="e#154#336#0" />
+                <element signature="e#968#1858#0" />
+                <element signature="e#1901#1937#0" />
+                <element signature="e#1981#2017#0" />
+                <element signature="e#2062#2096#0" />
+                <element signature="e#2139#2248#0" />
+                <element signature="e#2293#2364#0" />
+                <element signature="e#2487#2620#0" />
+                <element signature="e#2808#3017#0" />
+                <element signature="e#3051#3401#0" />
+                <element signature="e#3597#3715#0" />
+                <element signature="e#3759#3829#0" />
+                <element signature="e#3863#3981#0" />
+                <element signature="e#4309#4414#0" />
+                <element signature="e#4501#4648#0" />
+                <element signature="e#5907#6240#0" />
+                <element signature="e#6307#6494#0" />
+                <element signature="e#11743#11840#0" />
+                <element signature="e#11867#12041#0" />
+                <element signature="e#12371#12574#0" />
               </folding>
             </state>
           </provider>
@@ -36,17 +53,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/create2.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="389">
-              <caret line="408" column="35" lean-forward="true" selection-start-line="408" selection-start-column="35" selection-end-line="408" selection-end-column="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/create.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-711">
-              <caret line="318" selection-start-line="318" selection-end-line="318" selection-end-column="37" />
+            <state relative-caret-position="277">
+              <caret line="253" column="43" selection-start-line="253" selection-start-column="43" selection-end-line="253" selection-end-column="43" />
             </state>
           </provider>
         </entry>
@@ -54,8 +62,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/classes.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="353">
-              <caret line="473" column="45" selection-start-line="473" selection-start-column="45" selection-end-line="473" selection-end-column="45" />
+            <state relative-caret-position="-11">
+              <caret line="304" column="10" selection-start-line="304" selection-end-line="304" selection-end-column="10" />
               <folding>
                 <element signature="e#189#335#0" />
                 <element signature="n#!!block;n#render#0;n#Sprite#0" />
@@ -69,15 +77,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/img/cannon/cannon_sprite5.png">
-          <provider selected="true" editor-type-id="images" />
+        <entry file="file://$PROJECT_DIR$/js/create.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="73">
+              <caret line="284" column="10" selection-start-line="284" selection-start-column="4" selection-end-line="284" selection-end-column="10" />
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="213">
-              <caret line="300" selection-start-line="300" selection-end-line="304" selection-end-column="5" />
+              <caret line="109" column="52" selection-start-line="109" selection-start-column="52" selection-end-line="109" selection-end-column="52" />
             </state>
           </provider>
         </entry>
@@ -86,36 +98,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>cannonS</find>
-      <find>dart</find>
-      <find>isWi</find>
-      <find>cann</find>
-      <find>cannonDis</find>
-      <find>triangle</find>
-      <find>triangle =</find>
-      <find>ca</find>
-      <find>passed</find>
-      <find>explosion1</find>
-      <find>this.loop</find>
-      <find>endGame(</find>
-      <find>setUp</find>
-      <find>setUpExplosion</find>
-      <find>class Tria</find>
-      <find>Line</find>
-      <find>setUpEx</find>
-      <find>class Lien</find>
+      <find>firstCannon</find>
+      <find>firing</find>
+      <find>hasAmmo()</find>
+      <find>dartsGra</find>
+      <find>minGra</find>
+      <find>fireCannon()</find>
+      <find>duplicate</find>
+      <find>instanceof Dart</find>
+      <find>fire</find>
+      <find>cloneDa</find>
+      <find>fir</find>
+      <find>minGr</find>
+      <find>clone</find>
+      <find>console.lo</find>
+      <find>Spacing</find>
+      <find>createNext</find>
+      <find>Graphic</find>
+      <find>class Graphic</find>
+      <find>reset</find>
+      <find>displac</find>
+      <find>store</find>
+      <find>create</find>
+      <find>speed</find>
+      <find>endGame(true</find>
+      <find>dart =</find>
+      <find>store()</find>
+      <find>displa</find>
       <find>distance</find>
-      <find>distance =</find>
-      <find>deathTrap</find>
-      <find>console.</find>
       <find>case</find>
-      <find>handleCann</find>
-      <find>endGame</find>
-      <find>cannonDisp</find>
-      <find>explode</find>
-      <find>console.l</find>
-      <find>sprite</find>
-      <find>endG</find>
+      <find>class Line</find>
     </findStrings>
     <replaceStrings>
       <replace>flag.gameStarted</replace>
@@ -157,6 +169,17 @@
               <item name="RollToConquer" type="b2602c69:ProjectViewProjectNode" />
               <item name="RollToConquer" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="RollToConquer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="RollToConquer" type="462c0819:PsiDirectoryNode" />
+              <item name="img" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="RollToConquer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="RollToConquer" type="462c0819:PsiDirectoryNode" />
+              <item name="img" type="462c0819:PsiDirectoryNode" />
+              <item name="cannon" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -197,14 +220,16 @@
       <workItem from="1563075265152" duration="11102000" />
       <workItem from="1563118374992" duration="4665000" />
       <workItem from="1563154400166" duration="17000000" />
+      <workItem from="1563244950328" duration="15892000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62967000" />
+    <option name="totallyTimeSpent" value="78859000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-6" y="-6" width="1513" height="973" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15098172" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -224,6 +249,25 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15098172" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32925338" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -233,18 +277,24 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/js/classes.js</url>
-          <line>281</line>
+          <line>304</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/js/classes.js</url>
-          <line>492</line>
+          <line>521</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/js/classes.js</url>
           <line>34</line>
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/js/app2.js</url>
+          <line>89</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -266,21 +316,50 @@
     <entry file="file://$PROJECT_DIR$/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="213">
-          <caret line="300" selection-start-line="300" selection-end-line="304" selection-end-column="5" />
+          <caret line="109" column="52" selection-start-line="109" selection-start-column="52" selection-end-line="109" selection-end-column="52" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/create.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-711">
-          <caret line="318" selection-start-line="318" selection-end-line="318" selection-end-column="37" />
+        <state relative-caret-position="73">
+          <caret line="284" column="10" selection-start-line="284" selection-start-column="4" selection-end-line="284" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app2.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="22" column="29" selection-start-line="22" selection-start-column="29" selection-end-line="22" selection-end-column="29" />
+          <folding>
+            <element signature="e#154#336#0" />
+            <element signature="e#968#1858#0" />
+            <element signature="e#1901#1937#0" />
+            <element signature="e#1981#2017#0" />
+            <element signature="e#2062#2096#0" />
+            <element signature="e#2139#2248#0" />
+            <element signature="e#2293#2364#0" />
+            <element signature="e#2487#2620#0" />
+            <element signature="e#2808#3017#0" />
+            <element signature="e#3051#3401#0" />
+            <element signature="e#3597#3715#0" />
+            <element signature="e#3759#3829#0" />
+            <element signature="e#3863#3981#0" />
+            <element signature="e#4309#4414#0" />
+            <element signature="e#4501#4648#0" />
+            <element signature="e#5907#6240#0" />
+            <element signature="e#6307#6494#0" />
+            <element signature="e#11743#11840#0" />
+            <element signature="e#11867#12041#0" />
+            <element signature="e#12371#12574#0" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/classes.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="473" column="45" selection-start-line="473" selection-start-column="45" selection-end-line="473" selection-end-column="45" />
+        <state relative-caret-position="-11">
+          <caret line="304" column="10" selection-start-line="304" selection-end-line="304" selection-end-column="10" />
           <folding>
             <element signature="e#189#335#0" />
             <element signature="n#!!block;n#render#0;n#Sprite#0" />
@@ -292,20 +371,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app2.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="417">
-          <caret line="442" column="27" selection-start-line="442" selection-start-column="27" selection-end-line="442" selection-end-column="27" />
-          <folding>
-            <element signature="e#154#336#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/create2.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="408" column="35" lean-forward="true" selection-start-line="408" selection-start-column="35" selection-end-line="408" selection-end-column="35" />
+        <state relative-caret-position="277">
+          <caret line="253" column="43" selection-start-line="253" selection-start-column="43" selection-end-line="253" selection-end-column="43" />
         </state>
       </provider>
     </entry>

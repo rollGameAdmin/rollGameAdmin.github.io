@@ -18,12 +18,12 @@ function rollToConquer() {
     let distance = {
         inFrontOfTunnel: scale(100),
         closeToGround: scale(10),
-        fromCannonToFire: scale(3000),
-        fromCannonToStore: scale(170),
-        dartSpacing: scale(300)
+        fromCannonToFire: pos.cannonDisplacement,
+        fromCannonToStore: scale(210),
+        dartSpacing: scale(310)
     };
     let speed = {
-        cannonFire: scale(11)
+        dartSpeed: scale(12)
     };
     let score = 0;
     let startTime = 0;
@@ -200,8 +200,8 @@ function rollToConquer() {
     /**
      * Moves ball to starting position and starts moving graphics back when finished.
      */
-    function moveBallToStartAndBegin() {
-        startAnimation(moveBallForwardRequest, moveBallToStartAndBegin);
+    function moveBallToStartPosAndBegin() {
+        startAnimation(moveBallForwardRequest, moveBallToStartPosAndBegin);
         if (ball.isBehindGraphicPlusDisplacement(tunnel, distance.inFrontOfTunnel)) {
             ball.moveForward();
         } else {
@@ -222,40 +222,41 @@ function rollToConquer() {
     }
 
     /**
-     * Fires cannon.
+     * Fires nextCannon.
      */
     function fireCannon() {
         startAnimation(fireCannonRequest, fireCannon);
-        if (!cannon.isFiring) {
-            cannon.fire(speed.cannonFire);
-        } else if (cannon.hasAmmo() && hasDistanceBetween(cannon.justFired, cannon.nextRound, distance.dartSpacing)) {
-            cannon.fire(speed.cannonFire);
-        } else if (!cannon.hasAmmo()) {
+        if (!nextCannon.isFiring) {
+            nextCannon.fire(speed.dartSpeed);
+        } else if (nextCannon.hasAmmo() && hasDistanceBetween(nextCannon.justFired, nextCannon.nextRound, distance.dartSpacing)) {
+            nextCannon.fire(speed.dartSpeed);
+        } else if (!nextCannon.hasAmmo()) {
             cancelAnimation(fireCannonRequest)
         }
     }
 
     /**
-     * Stores cannon.
+     * Stores nextCannon.
      */
     function storeCannon() {
         startAnimation(storeCannonRequest, storeCannon);
-        if (cannon.frameIndex < cannon.numFrames - 1) {
-            cannon.update();
-        } else if (cannon.isAbove(gameTrack)) {
-            cannon.store();
+        if (nextCannon.frameIndex < nextCannon.numFrames - 1) {
+            nextCannon.update();
+        } else if (nextCannon.isAbove(gameTrack)) {
+            nextCannon.store();
         } else {
             cancelAnimation(storeCannonRequest);
+            nextCannon.isStored = true;
         }
     }
 
     /**
-     * Runs explosion.
+     * Runs cloudExplosion.
      */
-    function runExplosion() {
-        startAnimation(runExplosionRequest, runExplosion);
-        if (!explosion.finished) {
-            explosion.update();
+    function runCloudExplosion() {
+        startAnimation(runExplosionRequest, runCloudExplosion);
+        if (!cloudExplosion.finished) {
+            cloudExplosion.update();
         } else {
             cancelAnimations(runExplosionRequest);
         }
@@ -284,17 +285,25 @@ function rollToConquer() {
     }
 
     function handleCannons() {
+        //ensures that nextCannon references the right cannon
+        // whenever the cannonsList goes from empty to having 1 cannon.
+        if (nextCannon === null) {
+            nextCannon = cannons.getFirstGraphic();
+            console.log("Next cannon reassigned");
+        }
         if (ball.isWithinDistanceFromGraphic(nextCannon, distance.fromCannonToFire)
             && nextCannon.hasAmmo() && !nextCannon.isFiring) {
+            console.log("firing");
             fireCannon();
         } else if (!nextCannon.hasAmmo() &&
-            hasDistanceBetween(nextCannon.justFired, nextCannon, distance.fromCannonToStore)) {
-            if (!nextCannon.isStored) {
-                storeCannon();
-                nextCannon.isStored = true;
-                cannons.removeFront();
-                nextCannon = cannons.getFirstGraphic();
-            }
+            hasDistanceBetween(nextCannon.justFired, nextCannon, distance.fromCannonToStore)
+            && !nextCannon.startedStoring) {
+            console.log("storing");
+            storeCannon();
+            nextCannon.startedStoring = true;
+        } else if (ball.passed(nextCannon) && nextCannon.isStored) {
+            cannons.removeFront();
+            nextCannon = cannons.getFirstGraphic();
         }
     }
     function monitorGraphics() {
@@ -337,7 +346,6 @@ function rollToConquer() {
                     break;
                 }
                 case graphicTypes.dart : {
-                    let itsCannon = dart.cannon;
                     if (ball.hitAmmo(graphicInFront)) {
                         endGame(true);
                     } else if (ball.passed(graphicInFront)) {
@@ -348,13 +356,14 @@ function rollToConquer() {
                 default: {}
             }
         }
+
         if (!cannons.isEmpty()) {
             handleCannons();
         }
 
         if (isLastGraphicVisible()) {
-            //createNextGraphic(lastGraphic);
-            //updateLastGraphic();
+            lastGraphicType = createNextGraphic(lastGraphic);
+            updateLastGraphic();
         }
 
         if (shouldDeleteGraphic()) {
@@ -372,7 +381,7 @@ function rollToConquer() {
     function startGame() {
         flag.gameStarted = true;
         hideStartScreen();
-        moveBallToStartAndBegin();
+        moveBallToStartPosAndBegin();
         startTime = Date.now();
         window.setInterval(timer, 100);
     }
@@ -398,12 +407,12 @@ function rollToConquer() {
 
     /*------ Section: Game End Function Prototypes -------*/
     function setUpExplosion() {
-        explosion.centerX = graphicInFront.centerX;
+        cloudExplosion.centerX = graphicInFront.centerX;
         graphicsToRender.remove(ball);
         if (graphicInFront.graphicType !== graphicTypes.deathTrap) {
             graphicsToRender.remove(graphicInFront);
         }
-        graphicsToRender.addToFront(explosion);
+        graphicsToRender.addToFront(cloudExplosion);
     }
 
     function endGame(shouldExplode) {
@@ -417,11 +426,13 @@ function rollToConquer() {
             }
         } else {
             setUpExplosion();
-            runExplosion();
+            runCloudExplosion();
             showFailedScreen();
         }
 
     }
+    /*-----------------------------------------------------*/
+    /*----- Section: Animation Requests --------------*/
     let renderGraphicsRequest = new AnimationRequest();
     let moveGraphicsBackRequest = new AnimationRequest();
     let moveBallToStartRequest = new AnimationRequest();
@@ -442,6 +453,7 @@ function rollToConquer() {
         makeBallFallRequest,
         updateScoreRequest,
         fireCannonRequest);
+    /*------------------------------------------------*/
     renderGraphics();
 }
 

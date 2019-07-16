@@ -107,7 +107,7 @@ function main() {
     let shootDartsReq = 0;
     function shootDarts() {
         shootDartsReq = window.requestAnimationFrame(shootDarts);
-        if ((dartsToShoot[global.dartNum-1].endX <= cannon.getLeftX()- scale(320)) && global.dartNum < dartsToShoot.length) {
+        if ((dartsToShoot[global.dartNum-1].endX <= firstCannon.getLeftX()- scale(320)) && global.dartNum < dartsToShoot.length) {
             dartsToShoot[global.dartNum].speed = canvas.width * (6.7+4)/1305;
             global.dartNum++;
         } else if (global.dartNum == dartsToShoot.length) {
@@ -118,10 +118,10 @@ function main() {
     let storeCannonReq = 0;
     function storeCannon() {
         storeCannonReq = window.requestAnimationFrame(storeCannon);
-        if (cannon.frameIndex < cannon.numFrames - 1) {
-            cannon.update();
-        } else if (cannon.centerY <= line.beginY + cannon.width) {
-            cannon.store();
+        if (firstCannon.frameIndex < firstCannon.numFrames - 1) {
+            firstCannon.update();
+        } else if (firstCannon.centerY <= line.beginY + firstCannon.width) {
+            firstCannon.store();
         } else {
             window.cancelAnimationFrame(storeCannonReq);
         }
@@ -389,8 +389,8 @@ function main() {
         }
         /*---*/
 
-        /* manage cannon and darts */
-        if (cannon.getRightX() < scale(-100)) {
+        /* manage firstCannon and darts */
+        if (firstCannon.getRightX() < scale(-100)) {
             graphicsToRender.remove(cannonRow);
         }
     
@@ -444,21 +444,21 @@ function main() {
             global.hitTri = ball.deathTri(triRow);
         }
 
-        /*manage cannon shooting*/ 
-        if (Math.abs((cannon.getLeftX()) - (ball.getRightX()) <= scale(2800)) &&
+        /*manage firstCannon shooting*/
+        if (Math.abs((firstCannon.getLeftX()) - (ball.getRightX()) <= scale(2800)) &&
             !global.shotDarts) {
             shootFirstDart();
             shootDarts();
             shotDarts = true;
         }
 
-        /*store cannon*/
-        if (Math.abs((cannon.getLeftX()) - (ball.getRightX()) <= scale(400)) && !stored) {
+        /*store firstCannon*/
+        if (Math.abs((firstCannon.getLeftX()) - (ball.getRightX()) <= scale(400)) && !stored) {
             storeCannon();
             stored = true;
         }
 
-        /*Check if ball has hit a dart*/
+        /*Check if ball has hit a firstDart*/
         if (dartsToShoot.length > 0) {
             let dart = dartsToShoot[global.dartsIndex];
             if (dart.beginX <= ball.getRightX() &&
@@ -468,7 +468,7 @@ function main() {
                 }
             }
 
-        /*Update current dart being checked*/
+        /*Update current firstDart being checked*/
         if (ball.getLeftX() >= dartsToShoot[global.dartsIndex].endX && global.dartsIndex < dartsToShoot.length - 1) {
             global.dartsIndex++;
         }

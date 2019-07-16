@@ -64,14 +64,14 @@ let pos = {
     secondTriDisplacement: scale(250),
     firstRecDisplacement: scale(350),
     recOnGroundY: trackPos.y - dimen.rectangleHeight / 2,
-    rectangleSpacing: scale(160),
+    minRectangleSpacing: scale(160),
     rectangleTowerSpacing: scale(165),
     rectangleTowerHeightDiff: scale(-15),
     deathTrapOnGroundY: trackPos.y - dimen.deathTrapStroke/2,
-    newGraphicMinDisplacement: 150,
-    newGraphicMaxDisplacement: 200,
-    cannonDisplacement: scale(1600),
-    cannonOnGroundY: trackPos.y - dimen.cannonHeight/2,
+    newGraphicMinDisplacement: 200,
+    newGraphicMaxDisplacement: 400,
+    cannonDisplacement: scale(1700),
+    cannonOnGroundY: trackPos.y - dimen.cannonHeight/2 + scale(10),
     dartDisplacementX: scale(20),
     dartDisplacementY: scale(10),
 };
@@ -81,9 +81,10 @@ let num = {
     deathTrapRowAdditions: 1,
     minRecDups: 0,
     maxRecDups: 1,
-    minTriDups: 1,
+    minTriDups: 0,
     maxTriDups: 2,
-    dartDups: 3
+    minDartDups: 1,
+    maxDartDups: 2
 };
 
 let sprites = {
@@ -105,11 +106,17 @@ let graphicsToRender = new GraphicsToRender(context);
 let graphicsToMonitor = new GraphicsList();
 let graphicsToDelete = new GraphicsList();
 let cannons = new GraphicsList();
+let lastGraphicType = graphicTypes.cannon;
 
 function addGraphicToRenderAndMonitor(graphic) {
     graphicsToRender.addToBack(graphic);
     graphicsToRender.addGraphicToMoveBack(graphic);
     graphicsToMonitor.addToBack(graphic);
+}
+
+function addCannonToList(cannon) {
+    cannons.addToBack(cannon);
+    addGraphicToRenderAndMoveBack(cannon);
 }
 
 function addGraphicToRenderAndMoveBack(graphic) {
@@ -118,114 +125,45 @@ function addGraphicToRenderAndMoveBack(graphic) {
 }
 
 function duplicate(shape) {
-    return Object.assign(Object.create(Object.getPrototypeOf(shape)),shape);
+    let copy = Object.assign(Object.create(Object.getPrototypeOf(shape)),shape);
+    if (!(copy instanceof CannonSprite)) {
+        addGraphicToRenderAndMonitor(copy);
+    }
+    return copy;
 }
 
 function duplicateForRow(shape) {
-    let duplicate;
-    duplicate = Object.assign(Object.create(Object.getPrototypeOf(shape)),shape);
+    let copy = duplicate(shape);
     if (shape instanceof Triangle) {
         if (shape.spacing !== NO_CHANGE) {
-            duplicate.beginX = shape.endX + shape.spacing;
-            duplicate.endX = duplicate.beginX + duplicate.width;
-            duplicate.topX = duplicate.beginX + duplicate.width/2;
+            copy.beginX = shape.endX + shape.spacing;
+            copy.endX = copy.beginX + copy.width;
+            copy.topX = copy.beginX + copy.width/2;
         }
     } else if (shape instanceof Rectangle) {
-        duplicate.centerX = shape.centerX + shape.width + shape.flatSpacing;
+        copy.centerX = shape.centerX + shape.width + shape.flatSpacing;
     } else if (shape instanceof Line) {
-        duplicate.beginX = shape.getRightX() + shape.spacing;
-        duplicate.endX = duplicate.beginX + pos.rectangleSpacing;
+        copy.beginX = shape.getRightX() + shape.spacing;
+        copy.endX = copy.beginX + pos.minRectangleSpacing;
     } else if (shape instanceof Pic) {
-        duplicate.image = new Image();
-        duplicate.image.src = duplicate.src;
-        duplicate.image.width = duplicate.width;
-        duplicate.image.height = duplicate.height;
+        copy.image = new Image();
+        copy.image.src = copy.src;
+        copy.image.width = copy.width;
+        copy.image.height = copy.height;
     }
-    return duplicate;
+    return copy;
 }
 
 //Creates array of adjacent rectangles
 function createRowOfDuplicates(shape, amount) {
     let shapeToCopy = shape;
     for (let i = 0; i < amount; i++) {
-        let copy = duplicateForRow(shapeToCopy);
-        if (copy instanceof Dart) {
-            copy.loadToCannon();
+        if (shape instanceof Dart) {
+            shapeToCopy = shape.clone(shape.cannon);
+            addGraphicToRenderAndMonitor(shapeToCopy);
+        } else {
+            shapeToCopy = duplicateForRow(shapeToCopy);
         }
-        addGraphicToRenderAndMonitor(copy);
-        shapeToCopy = copy;
-    }
-}
-
-function getNextGraphicType() {
-    let minGraphicType = graphicTypes.rectangle;
-    let maxGraphicType = graphicTypes.deathTrap;
-    return Math.floor(Math.random() * (maxGraphicType - minGraphicType + 1)) + minGraphicType;
-}
-
-function getNextGraphicDisplacement() {
-    let minDisplacement = pos.newGraphicMinDisplacement;
-    let maxDisplacement = pos.newGraphicMaxDisplacement;
-    return Math.floor(Math.random() * (maxDisplacement - minDisplacement + 1)) + minDisplacement;
-}
-
-function getNextRecDupsAmount() {
-    let minDups = num.minRecDups;
-    let maxDups = num.maxRecDups;
-    return Math.floor(Math.random() * (maxDups - minDups + 1)) + minDups;
-}
-
-function getNextTriDupsAmount() {
-    let minDups = num.minTriDups;
-    let maxDups = num.maxTriDups;
-    return Math.floor(Math.random() * (maxDups - minDups + 1)) + minDups;
-}
-
-function createNextGraphic(lastGraphic) {
-    let graphicType =  getNextGraphicType();
-    let displacement = getNextGraphicDisplacement();
-    switch(graphicType) {
-        case graphicTypes.rectangle : {
-            let newRectangle = duplicate(firstRectangle);
-            newRectangle.centerX = lastGraphic.getRightX() + displacement + dimen.rectangleWidth/2;
-            newRectangle.changeColor(colors.oceanBlue);
-            addGraphicToRenderAndMonitor(newRectangle);
-            break;
-        }
-        case graphicTypes.deathTriangle : {
-            let numDups = getNextTriDupsAmount();
-            let newTriangle = duplicate(firstTriangle);
-            newTriangle.beginX = lastGraphic.getRightX() + displacement;
-            newTriangle.beginY = triPos.beginY;
-            newTriangle.topX = newTriangle.beginX + dimen.triangleWidth/2;
-            newTriangle.topY = newTriangle.beginY - dimen.triangleHeight;
-            newTriangle.endX = newTriangle.beginX + dimen.triangleWidth;
-            newTriangle.endY = triPos.beginY;
-            addGraphicToRenderAndMonitor(newTriangle);
-            createRowOfDuplicates(newTriangle, numDups);
-            break;
-        }
-        case graphicTypes.deathTrap : {
-            let numDups = getNextRecDupsAmount();
-            let newTrap = duplicate(firstDeathTrap);
-            if (lastGraphic.graphicType === graphicTypes.rectangle) {
-                newTrap.beginX = lastGraphic.getRightX();
-                newTrap.endX = newTrap.beginX + pos.rectangleSpacing;
-                addGraphicToRenderAndMonitor(newTrap);
-                createRowOfRecsAndTraps(lastGraphic, newTrap, numDups);
-            } else {
-                let newRectangle = duplicateForRow(firstRectangle);
-                newRectangle.centerX = lastGraphic.getRightX() + displacement;
-                newRectangle.changeColor(colors.oceanBlue);
-                addGraphicToRenderAndMonitor(newRectangle);
-                newTrap.beginX = newRectangle.getRightX();
-                newTrap.endX = newTrap.beginX + pos.rectangleSpacing;
-                addGraphicToRenderAndMonitor(newTrap);
-                createRowOfRecsAndTraps(newRectangle, newTrap, numDups);
-            }
-            break;
-        }
-        default: {}
     }
 }
 
@@ -233,28 +171,109 @@ function createRowOfRecsAndTraps(rec, trap, amount) {
     let rectangle = rec;
     let deathTrap = trap;
     for (let i = 0; i < amount; i++) {
-        let recCopy = duplicateForRow(rectangle);
-        addGraphicToRenderAndMonitor(recCopy);
-        rectangle = recCopy;
-
-        let trapCopy = duplicateForRow(deathTrap);
-        addGraphicToRenderAndMonitor(trapCopy);
-        deathTrap = trapCopy;
+        rectangle = duplicateForRow(rectangle);
+        deathTrap = duplicateForRow(deathTrap);
     }
-    addGraphicToRenderAndMonitor(duplicateForRow(rectangle));
+    duplicateForRow(rectangle);
 }
 
-function repositionTriangle(triangle, beginX, beginY) {
-    if (beginX !== NO_CHANGE) {
-        triangle.beginX = beginX;
-        triangle.topX = triangle.beginX + triangle.width/2;
-        triangle.endX = triangle.beginX + triangle.width;
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function getNextGraphicType() {
+    let minGraphic = graphicTypes.rectangle;
+    let maxGraphic = graphicTypes.cannon;
+    return getRandom(minGraphic, maxGraphic);
+}
+
+function getNextGraphicDisplacement() {
+    let minDisplacement = pos.newGraphicMinDisplacement;
+    let maxDisplacement = pos.newGraphicMaxDisplacement;
+    return getRandom(minDisplacement, maxDisplacement);
+}
+
+function getNextRecDupsAmount() {
+    let minDups = num.minRecDups;
+    let maxDups = num.maxRecDups;
+    return getRandom(minDups, maxDups);
+}
+
+function getNextTriDupsAmount() {
+    let minDups = num.minTriDups;
+    let maxDups = num.maxTriDups;
+    return getRandom(minDups, maxDups);
+}
+
+function getNextDartDups() {
+    let minDups = num.minDartDups;
+    let maxDups = num.maxDartDups;
+    return getRandom(minDups, maxDups);
+}
+
+function getNextRecSpacing() {
+    let minSpacing = pos.minRectangleSpacing;
+    let maxSpacing = pos.minRectangleSpacing + scale(30);
+    return getRandom(minSpacing, maxSpacing);
+}
+
+let numCreatedBeforeCannon = 0;
+function createNextGraphic(lastGraphic) {
+    let graphicType =  getNextGraphicType();
+    let displacement = getNextGraphicDisplacement();
+    switch(graphicType) {
+        case graphicTypes.rectangle : {
+            numCreatedBeforeCannon++;
+            let numDups = getNextRecDupsAmount();
+
+            let newRectangle = duplicate(firstRectangle);
+            newRectangle.reposition(lastGraphic.getRightX() + displacement + dimen.rectangleWidth/2);
+            newRectangle.changeColor(colors.oceanBlue);
+
+            let newTrap = duplicate(firstDeathTrap);
+            newTrap.reposition(newRectangle.getRightX(), pos.minRectangleSpacing);
+
+            if (numDups > 0) {
+                createRowOfRecsAndTraps(newRectangle, newTrap, numDups);
+            } else {
+                duplicateForRow(newRectangle);
+            }
+            break;
+        }
+        case graphicTypes.deathTriangle : {
+            numCreatedBeforeCannon++;
+            let numDups = getNextTriDupsAmount();
+
+            let newTriangle = duplicate(firstTriangle);
+            newTriangle.reposition(lastGraphic.getRightX() + displacement, triPos.beginY);
+            createRowOfDuplicates(newTriangle, numDups);
+            break;
+        }
+        case graphicTypes.cannon : {
+            if (lastGraphicType !== graphicTypes.cannon && numCreatedBeforeCannon > 3) {
+                numCreatedBeforeCannon = 0;
+                let numDups = getNextDartDups();
+                displacement = pos.cannonDisplacement;
+                let newCannon = duplicate(firstCannon);
+                newCannon.reset();
+                if (numDups === 2)  {
+                   displacement += scale(600);
+                }
+                newCannon.reposition(lastGraphic.getRightX() + displacement);
+                newCannon.centerY = newCannon.initialCenterY;
+
+                let newDart = firstDart.clone(newCannon);
+                addGraphicToRenderAndMonitor(newDart);
+                newDart.reposition(newCannon.getLeftX() + pos.dartDisplacementX);
+                createRowOfDuplicates(newDart, numDups);
+
+                addCannonToList(newCannon);
+            }
+            break;
+        }
+        default: {}
     }
-    if (beginY !== NO_CHANGE) {
-        triangle.beginY = beginY;
-        triangle.topY = triangle.beginY - triangle.height;
-        triangle.endY = triangle.beginY;
-    }
+    return graphicType;
 }
 
 let gameTrack = new Line({
@@ -313,10 +332,6 @@ let firstTriangle = new Triangle({
     c: context,
     beginX: triPos.beginX,
     beginY: triPos.beginY,
-    topX: triPos.beginX + dimen.triangleWidth/2,
-    topY: triPos.beginY - dimen.triangleHeight,
-    endX: triPos.beginX + dimen.triangleWidth,
-    endY: triPos.beginY,
     width: dimen.triangleWidth,
     height: dimen.triangleHeight,
     color: colors.lightGreen,
@@ -329,8 +344,7 @@ let firstTriangle = new Triangle({
 addGraphicToRenderAndMonitor(firstTriangle);
 
 let secondTriangle = duplicateForRow(firstTriangle);
-repositionTriangle(secondTriangle, firstTriangle.endX + pos.secondTriDisplacement, NO_CHANGE);
-addGraphicToRenderAndMonitor(secondTriangle);
+secondTriangle.reposition(firstTriangle.endX + pos.secondTriDisplacement, NO_CHANGE);
 createRowOfDuplicates(secondTriangle, num.triangleAdditionsSecondRow);
 
 //Create new Rectangle object according to rectangleDetails1
@@ -344,7 +358,7 @@ let firstRectangle = new Rectangle({
     strokeColor: colors.lightGreen,
     strokeWidth: dimen.rectangleStroke, //original 3.5
     speed: gameSpeed,
-    flatSpacing: pos.rectangleSpacing, //original 150
+    flatSpacing: pos.minRectangleSpacing, //original 150
     towerSpacing: pos.rectangleTowerSpacing,
     towerHeightDiff: pos.rectangleTowerHeightDiff,
     graphicType: graphicTypes.rectangle
@@ -355,7 +369,7 @@ let firstDeathTrap = new Line({
     c: canvas.getContext("2d"),
     beginX: firstRectangle.getRightX(),
     beginY: pos.deathTrapOnGroundY,
-    endX: firstRectangle.getRightX() + pos.rectangleSpacing,
+    endX: firstRectangle.getRightX() + pos.minRectangleSpacing,
     endY: pos.deathTrapOnGroundY,
     color: colors.orange,
     width: dimen.deathTrapStroke, //thickness
@@ -366,7 +380,7 @@ let firstDeathTrap = new Line({
 addGraphicToRenderAndMonitor(firstDeathTrap);
 createRowOfRecsAndTraps(firstRectangle, firstDeathTrap, num.deathTrapRowAdditions);
 
-let cannon = new CannonSprite({
+let firstCannon = new CannonSprite({
     c: context,
     spriteWidth: dimen.cannonSpriteWidth,
     spriteHeight: dimen.cannonSpriteHeight,
@@ -383,18 +397,12 @@ let cannon = new CannonSprite({
     loop: false,
     graphicType: graphicTypes.cannon
 });
-cannons.addToBack(cannon);
- //original 28
-let beginX = cannon.getLeftX() + pos.dartDisplacementX;
-let beginY = cannon.centerY + pos.dartDisplacementY;
-let dart = new Dart({
+addCannonToList(firstCannon);
+
+let firstDart = new Dart({
     c: canvas.getContext("2d"),
-    beginX: beginX,
-    beginY: beginY,
-    topX: beginX + dimen.dartWidth,
-    topY: beginY - dimen.dartHeight/2,
-    endX: beginX + dimen.dartWidth,
-    endY: beginY + dimen.dartHeight/2,
+    beginX: firstCannon.getLeftX() + pos.dartDisplacementX,
+    beginY: firstCannon.centerY + pos.dartDisplacementY,
     width: dimen.dartWidth,
     height: dimen.dartHeight,
     color: colors.orange,
@@ -402,17 +410,16 @@ let dart = new Dart({
     strokeWidth: dimen.dartStroke,
     speed: gameSpeed,
     spacing: NO_CHANGE,
-    cannon: cannon,
+    cannon: firstCannon,
     graphicType: graphicTypes.dart
 });
-dart.loadToCannon();
-addGraphicToRenderAndMonitor(dart);
-createRowOfDuplicates(dart, num.dartDups);
-addGraphicToRenderAndMonitor(cannon);
+firstDart.loadToCannon();
+addGraphicToRenderAndMonitor(firstDart);
+createRowOfDuplicates(firstDart, num.minDartDups);
 
 width = ((37) * 236/34) * 1.5;
 height = ((40) * 162/34) * 1.5;
-let explosion = new Sprite({
+let cloudExplosion = new Sprite({
     c: canvas.getContext("2d"),
     spriteWidth: 740,
     spriteHeight: 513,

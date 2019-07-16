@@ -25,11 +25,11 @@ function refresh() {
 let graphicTypes = {
     rectangle: 1,
     deathTriangle: 2,
-    deathTrap: 3,
-    trampo: 4,
-    wall: 5,
-    dart: 6,
-    cannon: 7
+    cannon: 3,
+    deathTrap: 4,
+    dart: 5,
+    trampo: 6,
+    wall: 7
 };
 
 class Graphic {
@@ -40,6 +40,7 @@ class Graphic {
         this.initialCenterX = this.centerX; //initial x-coordinate of center
         this.initialCenterY = this.centerY; //initial y-coordinate of center
         this.speed = details.speed; //amount of displacement per animation frame
+        this.initialSpeed = this.speed;
         this.bounceSpeedY = canvas.width * 7.2/1305; //displacement of centerY when calling bounce() original: 7.2
         this.initialBounceSpeedY = this.bounceSpeedY; //initial displacement of centerY when calling bounce()
         this.deceleration = canvas.width * .42/1305; //number to subtract from bounceSpeedY when calling bounce() original: .37
@@ -61,6 +62,12 @@ class Graphic {
         this.axisY =  this.centerY + (Math.sin(-Math.PI/2) * this.loopRadius);
         this.graphicType = details.graphicType;
         this.isStored = false;
+        this.startedStoring = false;
+    }
+
+    reposition(newX) {
+        this.centerX = newX;
+        this.initialCenterX = newX;
     }
 
     //Add render method when you create class for a new shape :)
@@ -117,7 +124,6 @@ class Graphic {
 
     store() {
         this.centerY += this.storeSpeed;
-        this.isStored = true;
     }
 
     changeColor(color) {
@@ -184,6 +190,10 @@ class Rectangle extends Graphic {
         this.strokeWidth = details.strokeWidth;
     }
 
+    reposition(newX) {
+        this.centerX = newX;
+    }
+
     //cs rectangle according to its center location
     render() {
         this.c.beginPath();
@@ -206,16 +216,29 @@ class Triangle extends Graphic {
         super(details);
         this.beginX = details.beginX; //x-coordinate for left-bottom corner
         this.beginY = details.beginY; //y-coordinate for left-bottom corner
-        this.topX = details.topX; //x-coordinate for top corner
-        this.topY = details.topY; //y-coordinate for top corner
-        this.endX = details.endX; //x-coordinate for right-bottom corner
-        this.endY = details.endY; //y-coordinate for right-bottom corner
         this.width = details.width; //triangle width
-        this.centerX = this.beginX + this.width/2;
         this.height = details.height; //triangle height
+        this.topX = this.beginX + this.width/2; //x-coordinate for top corner
+        this.topY = this.beginY - this.height; //y-coordinate for top corner
+        this.endX = this.beginX + this.width;//x-coordinate for right-bottom corner
+        this.endY = this.beginY; //y-coordinate for right-bottom corner
+        this.centerX = this.beginX + this.width/2;
         this.color = details.color; //color of triangle
         this.strokeColor = details.strokeColor;
         this.strokeWidth = details.strokeWidth;
+    }
+
+    reposition(newX, newY) {
+        if (newX !== -1) {
+            this.beginX = newX;
+            this.topX = this.beginX + this.width/2;
+            this.endX = this.beginX + this.width;
+        }
+        if (newY !== -1) {
+            this.beginY = newY;
+            this.topY = this.beginY - this.height;
+            this.endY = this.beginY;
+        }
     }
 
     //cs triangle on Canvas
@@ -293,6 +316,11 @@ class Line {
         this.speed = details.speed;
         this.graphicType = details.graphicType;
         this.spacing = details.spacing
+    }
+
+    reposition(newX, length) {
+        this.beginX = newX;
+        this.endX = this.beginX + length;
     }
 
     //cs line on Canvas
@@ -403,6 +431,12 @@ class Sprite extends Graphic {
         );
     }
 
+    restart() {
+        this.columnIndex = 0;
+        this.rowIndex = 0;
+        this.frameIndex = 0;
+    }
+
     update() {
         this.tickCount += 1;
         if (this.tickCount > this.ticksPerFrame) {
@@ -424,10 +458,7 @@ class Sprite extends Graphic {
                         this.columnIndex++;
                         this.frameIndex++;
                     }  else if (this.loop) {
-                        this.finished = true;
-                        this.columnIndex = 0;
-                        this.rowIndex = 0;
-                        this.frameIndex = 0;
+                        this.restart();
                     } else {
                         this.finished = true;
                     }
@@ -466,9 +497,7 @@ class Sprite extends Graphic {
                         this.columnIndex--;
                         this.frameIndex--;
                     } else if (this.loop) {
-                        this.frameIndex = 0;
-                        this.rowIndex = 0;
-                        this.columnIndex = 0;
+                        this.restart();
                         this.renderForwards = true;
                     } else {
                         this.finished = true;
@@ -587,8 +616,8 @@ class BallSprite extends Sprite {
     }
 
     hitAmmo(dart) {
-        return this.centerX >= dart.getLeftX() &&
-            this.centerX <= dart.getRightX() &&
+        return this.getRightX() >= dart.getLeftX() &&
+            this.getLeftX() <= dart.getRightX() &&
             this.centerY >= dart.getTopY();
     }
 
@@ -668,6 +697,16 @@ class CannonSprite extends Sprite {
         this.nextRound = null;
     }
 
+    reset() {
+        this.restart();
+        this.darts = new GraphicsList();
+        this.isFiring = false;
+        this.isStored = false;
+        this.startedStoring = false;
+        this.justFired = null;
+        this.nextRound = null;
+    }
+
     load(dart) {
         this.darts.addToBack(dart);
     }
@@ -694,10 +733,32 @@ class Dart extends Triangle {
     constructor(details) {
         super(details);
         this.cannon = details.cannon;
+        this.finishSettingUp();
+    }
+
+    finishSettingUp() {
+        this.topX = this.beginX + this.width;
+        this.topY = this.beginY - this.height/2;
+        this.endX = this.beginX + this.width;
+        this.endY = this.beginY + this.height/2;
     }
 
     loadToCannon() {
         this.cannon.load(this);
+    }
+
+    reposition(newX) {
+        this.beginX = newX;
+        this.topX = this.beginX + dimen.dartWidth;
+        this.endX = this.beginX + dimen.dartWidth;
+    }
+
+    clone(cannon) {
+        let copy = Object.assign(Object.create(Object.getPrototypeOf(this)),this);
+        copy.speed = copy.initialSpeed;
+        copy.cannon = cannon;
+        cannon.load(copy);
+        return copy;
     }
 }
 
@@ -795,6 +856,7 @@ class GraphicsList {
         this.head = null;
         this.tail = this.head;
         this.length = 0;
+        this.justRestored = false;
         this.iterator = {
             *[Symbol.iterator]() {
                 let current = this.head;
@@ -803,10 +865,11 @@ class GraphicsList {
                     current = current.next;
                 }
             }
-        }
+        };
     }
 
     addToBack(graphic) {
+        this.justRestored = this.length === 0;
         this.length++;
         let newGraphic = new GraphicNode(graphic);
         if (this.head === null) {
@@ -820,6 +883,7 @@ class GraphicsList {
     }
 
     addToFront(graphic) {
+        this.justRestored = this.length === 0;
         this.length++;
         let newGraphic = new GraphicNode(graphic);
         if (this.head == null) {
